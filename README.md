@@ -1,12 +1,12 @@
-# Hipoz
+# Boilerplate
 
 ## Manual Installation
 
 Clone the repo:
 
 ```bash
-git clone --depth 1 https://github.com/hagopj13/hipoz.git
-cd hipoz-api
+git clone --depth 1 https://github.com/GermanTorales/node_es6_express_mongoose_docker.git boilerplate_node
+cd boilerplate_node
 ```
 
 Install the dependencies:
@@ -25,14 +25,13 @@ cp .env.example .env
 
 ## Table of Contents
 
-- [Hipoz](#hipoz)
+- [Boilerplate](#boilerplate)
   - [Manual Installation](#manual-installation)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Commands](#commands)
   - [Environment Variables](#environment-variables)
   - [Project Structure](#project-structure)
-  - [API Documentation](#api-documentation)
     - [API Endpoints](#api-endpoints)
   - [Error Handling](#error-handling)
   - [Validation](#validation)
@@ -53,15 +52,12 @@ cp .env.example .env
 - **Logging**: using [winston](https://github.com/winstonjs/winston) and [morgan](https://github.com/expressjs/morgan)
 - **Testing**: unit and integration tests using [Jest](https://jestjs.io)
 - **Error handling**: centralized error handling mechanism
-- **API documentation**: with [swagger-jsdoc](https://github.com/Surnet/swagger-jsdoc) and [swagger-ui-express](https://github.com/scottie1984/swagger-ui-express)
-- **Process management**: advanced production process management using [PM2](https://pm2.keymetrics.io)
 - **Dependency management**: with [Yarn](https://yarnpkg.com)
 - **Environment variables**: using [dotenv](https://github.com/motdotla/dotenv) and [cross-env](https://github.com/kentcdodds/cross-env#readme)
 - **Security**: set security HTTP headers using [helmet](https://helmetjs.github.io)
 - **Santizing**: sanitize request data against xss and query injection
 - **CORS**: Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
 - **Compression**: gzip compression with [compression](https://github.com/expressjs/compression)
-- **CI**: continuous integration with [Travis CI](https://travis-ci.org)
 - **Docker support**
 - **Code coverage**: using [coveralls](https://coveralls.io)
 - **Code quality**: with [Codacy](https://www.codacy.com)
@@ -133,8 +129,16 @@ The environment variables can be found and modified in the `.env` file. They com
 # Port number
 PORT=3000
 
-# URL of the Mongo DB
-MONGO_URL=mongodb://127.0.0.1:27017/node-boilerplate
+# Environment
+NODE_ENV=
+
+# Mongo credentials
+MONGO_USER=
+MONGO_PASS=
+MONGO_HOST=
+MONGO_PORT=
+MONGO_DB_NAME=
+MONGO_URL=mongodb://<MONGO_USER>:<MONGO_PORT>/<MONGO_DB_NAME>
 
 # JWT
 # JWT secret key
@@ -143,14 +147,6 @@ JWT_SECRET=thisisasamplesecret
 JWT_ACCESS_EXPIRATION_MINUTES=30
 # Number of days after which a refresh token expires
 JWT_REFRESH_EXPIRATION_DAYS=30
-
-# SMTP configuration options for the email service
-# For testing, you can use a fake SMTP service like Ethereal: https://ethereal.email/create
-SMTP_HOST=email-server
-SMTP_PORT=587
-SMTP_USERNAME=email-server-username
-SMTP_PASSWORD=email-server-password
-EMAIL_FROM=support@yourapp.com
 ```
 
 ## Project Structure
@@ -159,7 +155,7 @@ EMAIL_FROM=support@yourapp.com
 src\
  |--config\         # Environment variables and configuration related things
  |--controllers\    # Route controllers (controller layer)
- |--docs\           # Swagger files
+ |--helpers\        # Functions helpers
  |--middlewares\    # Custom express middlewares
  |--models\         # Mongoose models (data layer)
  |--routes\         # Routes
@@ -170,10 +166,6 @@ src\
  |--index.js        # App entry point
 ```
 
-## API Documentation
-
-To view the list of available APIs and their specifications, run the server and go to `http://localhost:3000/v1/docs` in your browser. This documentation page is automatically generated using the [swagger](https://swagger.io/) definitions written as comments in the route files.
-
 ### API Endpoints
 
 List of available routes:
@@ -181,17 +173,12 @@ List of available routes:
 **Auth routes**:\
 `POST /v1/auth/register` - register\
 `POST /v1/auth/login` - login\
-`POST /v1/auth/refresh-tokens` - refresh auth tokens\
-`POST /v1/auth/forgot-password` - send reset password email\
-`POST /v1/auth/reset-password` - reset password\
-`POST /v1/auth/send-verification-email` - send verification email\
-`POST /v1/auth/verify-email` - verify email
 
 **User routes**:\
 `POST /v1/users` - create a user\
 `GET /v1/users` - get all users\
 `GET /v1/users/:userId` - get user\
-`PATCH /v1/users/:userId` - update user\
+`PUT /v1/users/:userId` - update user\
 `DELETE /v1/users/:userId` - delete user
 
 ## Error Handling
@@ -201,7 +188,7 @@ The app has a centralized error handling mechanism.
 Controllers should try to catch the errors and forward them to the error handling middleware (by calling `next(error)`). For convenience, you can also wrap the controller inside the catchAsync utility wrapper, which forwards the error.
 
 ```javascript
-const catchAsync = require('../utils/catchAsync');
+import catchAsync from '../utils/catchAsync';
 
 const controller = catchAsync(async (req, res) => {
   // this error will be forwarded to the error handling middleware
@@ -225,15 +212,14 @@ The app has a utility ApiError class to which you can attach a response code and
 For example, if you are trying to get a user from the DB who is not found, and you want to send a 404 error, the code should look something like:
 
 ```javascript
-const httpStatus = require('http-status');
-const ApiError = require('../utils/ApiError');
-const User = require('../models/User');
+import httpStatus from 'http-status';
+import ApiError from '../utils/ApiError';
+import User from '../models/User';
 
 const getUser = async (userId) => {
   const user = await User.findById(userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-  }
+
+  if (!user) throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
 };
 ```
 
@@ -244,10 +230,10 @@ Request data is validated using [Joi](https://joi.dev/). Check the [documentatio
 The validation schemas are defined in the `src/validations` directory and are used in the routes by providing them as parameters to the `validate` middleware.
 
 ```javascript
-const express = require('express');
-const validate = require('../../middlewares/validate');
-const userValidation = require('../../validations/user.validation');
-const userController = require('../../controllers/user.controller');
+import express from 'express';
+import validate from '../../middlewares/validate';
+import userValidation from '../../validations/user.validation';
+import userController from '../../controllers/user.controller';
 
 const router = express.Router();
 
@@ -259,9 +245,9 @@ router.post('/users', validate(userValidation.createUser), userController.create
 To require authentication for certain routes, you can use the `auth` middleware.
 
 ```javascript
-const express = require('express');
-const auth = require('../../middlewares/auth');
-const userController = require('../../controllers/user.controller');
+import express from 'express';
+import auth from '../../middlewares/auth';
+import userController from '../../controllers/user.controller';
 
 const router = express.Router();
 
@@ -276,20 +262,14 @@ An access token can be generated by making a successful call to the register (`P
 
 An access token is valid for 30 minutes. You can modify this expiration time by changing the `JWT_ACCESS_EXPIRATION_MINUTES` environment variable in the .env file.
 
-**Refreshing Access Tokens**:
-
-After the access token expires, a new access token can be generated, by making a call to the refresh token endpoint (`POST /v1/auth/refresh-tokens`) and sending along a valid refresh token in the request body. This call returns a new access token and a new refresh token.
-
-A refresh token is valid for 30 days. You can modify this expiration time by changing the `JWT_REFRESH_EXPIRATION_DAYS` environment variable in the .env file.
-
 ## Authorization
 
 The `auth` middleware can also be used to require certain rights/permissions to access a route.
 
 ```javascript
-const express = require('express');
-const auth = require('../../middlewares/auth');
-const userController = require('../../controllers/user.controller');
+import express from 'express';
+import auth from '../../middlewares/auth';
+import userController from '../../controllers/user.controller';
 
 const router = express.Router();
 
@@ -309,7 +289,7 @@ Import the logger from `src/config/logger.js`. It is using the [Winston](https:/
 Logging should be done according to the following severity levels (ascending order from most important to least important):
 
 ```javascript
-const logger = require('<path to src>/config/logger');
+import logger from '<path to src>/config/logger';
 
 logger.error('message'); // level 0
 logger.warn('message'); // level 1
@@ -332,8 +312,8 @@ Note: API request information (request url, response code, timestamp, etc.) are 
 The app also contains 2 custom mongoose plugins that you can attach to any mongoose model schema. You can find the plugins in `src/models/plugins`.
 
 ```javascript
-const mongoose = require('mongoose');
-const { toJSON, paginate } = require('./plugins');
+import mongoose from 'mongoose';
+import { toJSON, paginate } from './plugins';
 
 const userSchema = mongoose.Schema(
   {
