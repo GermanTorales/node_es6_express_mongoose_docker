@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  node-app:
+    build: .
+    image: node-app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:5.0
+    container_name: mongo
+    hostname: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=1234
+    ports:
+      - '27017:27017'
+    expose:
+      - '27017'

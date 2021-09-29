@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# yarn error logs
+yarn-error.log
+
+# Environment varibales
+.env*
+!.env*.example
+
+# Code coverage
+coverage
+
+# Docker
+docker-compose.local.yml
+
+# Database
+mongodb
+dbdata
+
+# Build
+build/
