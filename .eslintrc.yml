@@ -1,28 +1,30 @@
-plugins:
-  - prettier
 env:
-  es6: true
-  node: true
-  jest: true
+  browser: true
+  es2021: true
 extends:
-  - 'standard'
-  - 'eslint:recommended'
-  - 'plugin:prettier/recommended'
-globals:
-  process: true
-  console: true
-  Atomics: readonly
-  SharedArrayBuffer: readonly
+  - prettier
+  - standard
+  - eslint:recommended
+  - plugin:jest/recommended
+plugins:
+  - 'prettier'
 parserOptions:
-  ecmaVersion: 2020
+  ecmaVersion: 12
   sourceType: module
-parser: 'babel-eslint'
+  parser: 'babel-eslint'
+  allowImportExportEverywhere: true
 rules:
   {
-    'prettier/prettier': 'error',
-    'max-len': ['error', { 'code': 135, 'ignoreUrls': true, 'ignoreComments': false }],
-    'no-unused-vars': 1,
-    'no-case-declarations': 0,
-    'no-async-promise-executor': off,
+    prettier/prettier: 2,
+    no-console: 1,
+    eqeqeq: 2,
+    no-eq-null: 1,
+    no-multi-spaces: 1,
+    camelcase: 1,
+    semi: 0,
+    comma-dangle: 0,
+    space-before-function-paren: 0,
+    max-len: ['error', { code: 135, ignoreComments: true, ignoreUrls: true }],
+    indent: 0,
+    curly: [0, 'multi'],
   }
-eslint.validate: ["javascript"]

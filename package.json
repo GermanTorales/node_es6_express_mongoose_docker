@@ -7,7 +7,6 @@
   "repository": "https://github.com/GermanTorales/express_mongo_docker_boilerplate",
   "author": "German Torales <germantorales73@gmail.com>",
   "license": "MIT",
-  "type": "module",
   "engines": {
     "node": ">=14.x",
     "npm": ">=6.x"
@@ -58,6 +57,7 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "cross-env": "^7.0.0",
+    "date-fns": "^2.25.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.0.0",
@@ -66,15 +66,11 @@
     "http-status": "^1.4.0",
     "joi": "^17.3.0",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.24.0",
     "mongoose": "^5.7.7",
     "morgan": "^1.9.1",
-    "nodemailer": "^6.3.1",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "pm2": "^4.1.2",
-    "swagger-jsdoc": "^6.0.8",
-    "swagger-ui-express": "^4.1.6",
     "validator": "^13.0.0",
     "winston": "^3.2.1",
     "xss-clean": "^0.1.1"
@@ -110,8 +106,8 @@
     "eslint-config-prettier": "^8.1.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-jest": "^24.0.1",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-security": "^1.4.0",
@@ -121,8 +117,9 @@
     "jest": "^26.0.1",
     "lint-staged": "^10.0.7",
     "node-mocks-http": "^1.8.0",
-    "nodemon": "^2.0.0",
+    "nodemon": "2.0.4",
     "prettier": "^2.0.5",
-    "prettier-eslint": "^12.0.0"
+    "prettier-eslint": "^12.0.0",
+    "standard": "^14.3.4"
   }
 }
