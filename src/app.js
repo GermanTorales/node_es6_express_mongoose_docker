@@ -13,53 +13,56 @@ import { authLimiter } from './middlewares/rateLimiter.js';
 import { RoutesV1 } from './routes/index.js';
 import { errorConverter, errorHandler } from './middlewares/error.js';
 import ApiError from './utils/ApiError.js';
+import logger from './config/logger.js';
 
-const app = express();
+export default class Api {
+  async bootstrap(app) {
+    logger.info('Express app starting...');
 
-if (config.env !== 'test') {
-  app.use(morganSuccessHandler);
-  app.use(morganErrorHandler);
+    if (config.env !== 'test') {
+      app.use(morganSuccessHandler);
+      app.use(morganErrorHandler);
+    }
+
+    // set security HTTP headers
+    app.use(helmet());
+
+    // parse json request body
+    app.use(express.json());
+
+    // parse urlencoded request body
+    app.use(express.urlencoded({ extended: true }));
+
+    // sanitize request data
+    app.use(xss());
+    app.use(mongoSanitize());
+
+    // gzip compression
+    app.use(compression());
+
+    // enable cors
+    app.use(cors());
+    app.options('*', cors());
+
+    // jwt authentication
+    app.use(passport.initialize());
+    passport.use('jwt', jwtStrategy);
+
+    // limit repeated failed requests to auth endpoints
+    if (config.env === 'production') app.use('/v1/auth', authLimiter);
+
+    // v1 api routes
+    app.use('/api/v1', RoutesV1);
+
+    // send back a 404 error for any unknown api request
+    app.use((req, res, next) => {
+      next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+    });
+
+    // convert error to ApiError, if needed
+    app.use(errorConverter);
+
+    // handle error
+    app.use(errorHandler);
+  }
 }
-
-// set security HTTP headers
-app.use(helmet());
-
-// parse json request body
-app.use(express.json());
-
-// parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
-
-// sanitize request data
-app.use(xss());
-app.use(mongoSanitize());
-
-// gzip compression
-app.use(compression());
-
-// enable cors
-app.use(cors());
-app.options('*', cors());
-
-// jwt authentication
-app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
-
-// limit repeated failed requests to auth endpoints
-if (config.env === 'production') app.use('/v1/auth', authLimiter);
-
-// v1 api routes
-app.use('/api/v1', RoutesV1);
-
-// send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
-});
-
-// convert error to ApiError, if needed
-app.use(errorConverter);
-
-// handle error
-app.use(errorHandler);
-
-export default app;

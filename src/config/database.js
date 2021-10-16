@@ -8,8 +8,7 @@ const connectMongoose = async () => {
 
     logger.info('Connected to MongoDB');
   } catch (error) {
-    console.log(error)
-    logger.error(`Can't connect database`, error);
+    logger.error("Can't connect database", error);
   }
 };
 

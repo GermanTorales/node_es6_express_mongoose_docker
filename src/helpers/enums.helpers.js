@@ -4,7 +4,7 @@
  * const anyArray = new Proxy(['first', 'second'], getProperty);
  * const element = anyArray.firts;
  * console.log(element) // 'firts';
- * 
+ *
  * @returns {string} Array element
  */
 export const getProperty = {
