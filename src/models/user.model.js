@@ -6,7 +6,12 @@ import { UserRoles } from '../config/roles.js';
 
 const userSchema = mongoose.Schema(
   {
-    name: {
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    lastName: {
       type: String,
       required: true,
       trim: true,
@@ -18,9 +23,7 @@ const userSchema = mongoose.Schema(
       trim: true,
       lowercase: true,
       validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error('Invalid email');
-        }
+        if (!validator.isEmail(value)) throw new Error('Invalid email');
       },
     },
     password: {
@@ -29,9 +32,8 @@ const userSchema = mongoose.Schema(
       trim: true,
       minlength: 8,
       validate(value) {
-        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
+        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/))
           throw new Error('Password must contain at least one letter and one number');
-        }
       },
       private: true, // used by the toJSON plugin
     },
