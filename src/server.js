@@ -11,7 +11,7 @@ const start = async () => {
   await connectMongoose();
   await api.bootstrap(app);
 
-  const server = app.listen(config.port, () => logger.info(`Express already start, server on: ${config.host}:${config.port}`));
+  const server = app.listen(config.port, () => logger.info(`Express already start, server on: ${config.host}`));
 
   const exitHandler = () => {
     if (server) {

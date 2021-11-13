@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Create a Node.js app for building production-ready RESTful APIs using Express, by running one command",
   "bin": "bin/createNodejsApp.js",
-  "main": "src/index.js",
+  "main": "src/server.js",
   "repository": "https://github.com/GermanTorales/express_mongo_docker_boilerplate",
   "author": "German Torales <germantorales73@gmail.com>",
   "license": "MIT",
@@ -12,11 +12,11 @@
     "npm": ">=6.x"
   },
   "scripts": {
-    "start": " npm run build && node ./build/index.js",
+    "start": " npm run build && node ./build/server.js",
     "build": "npm run clean && npm run babel-build",
     "babel-build": "babel -d ./build ./src -s",
     "clean": "rm -rf ./build && mkdir build",
-    "dev": "nodemon --exec babel-node src/index.js",
+    "dev": "nodemon --exec babel-node src/server.js",
     "test": "jest -i --colors --verbose --detectOpenHandles",
     "test:watch": "jest -i --watchAll",
     "coverage": "jest -i --coverage",
