@@ -1,3 +1,3 @@
-import { getProperty } from '../helpers/enums.helpers.js';
+import { getProperty } from '../helpers';
 
 export const UserRoles = new Proxy(['user', 'admin'], getProperty);
