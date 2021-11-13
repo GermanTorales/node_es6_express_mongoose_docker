@@ -14,6 +14,7 @@ import { RoutesV1 } from './routes/index.js';
 import { errorConverter, errorHandler } from './middlewares/error.js';
 import ApiError from './utils/ApiError.js';
 import logger from './config/logger.js';
+import { Environments } from './constants';
 
 export default class Api {
   async bootstrap(app) {
@@ -49,7 +50,7 @@ export default class Api {
     passport.use('jwt', jwtStrategy);
 
     // limit repeated failed requests to auth endpoints
-    if (config.env === 'production') app.use('/v1/auth', authLimiter);
+    if (config.env === Environments.production) app.use('/v1/auth', authLimiter);
 
     // v1 api routes
     app.use('/api/v1', RoutesV1);
